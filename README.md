@@ -9,3 +9,9 @@
     Для Windows: `.\mvnw.cmd clean test`
 
 5. Если установлен maven: `mvn clean test`
+
+### Основная структура проекта
+* src/test/java/ru/yandex/disk - основная логика приложения
+* api/DiskApiClient - клиент для отправки API-запросов
+* config/TestConfig - конфигурация и настройки тестов
+* tests - директория с автотестами API (DeleteTest, GetTest, PostTest, PutTest)
