@@ -8,72 +8,86 @@ import static io.restassured.RestAssured.given;
 
 public class DiskApiClient {
 
-    // без авторизации
-    private RequestSpecification requestWithoutToken() {
+    private RequestSpecification unauthorizedRequest() {
         return given()
                 .baseUri(TestConfig.BASE_URL)
                 .header("Content-Type", "application/json");
     }
 
-    // с авторизацией
-    private RequestSpecification baseRequest() {
-        return requestWithoutToken()
+    private RequestSpecification authorizedRequest() {
+        return unauthorizedRequest()
                 .header("Authorization", "OAuth " + TestConfig.TOKEN);
     }
 
-    // GET
-
-    public Response getDiskInfo() {
-        return baseRequest()
+    public Response getResource(String path) {
+        return authorizedRequest()
+                .queryParam("path", path)
                 .when()
-                .get("/v1/disk");
+                .get("/v1/disk/resources");
     }
 
-    public Response getResourcesInfo(String path) {
-        return requestWithoutToken()
+    public Response getResourceWithoutToken(String path) {
+        return unauthorizedRequest()
                 .queryParam("path", path)
                 .when()
                 .get("/v1/disk/resources");
     }
 
     public Response getTrashInfo(String path){
-        return baseRequest()
+        return authorizedRequest()
                 .queryParam("path", path)
                 .when()
                 .get("/v1/disk/trash/resources");
     }
 
-    // PUT
-
     public Response createFolder(String path) {
-        return baseRequest()
+        return authorizedRequest()
                 .queryParam("path", path)
                 .when()
                 .put("/v1/disk/resources");
     }
 
-    // POST
+    public Response restoreFromTrash(String trashPath) {
+        return authorizedRequest()
+                .queryParam("path", trashPath)
+                .when()
+                .put("/v1/disk/trash/resources/restore");
+    }
 
     public Response copyResource(String from, String to) {
-        return baseRequest()
+        return authorizedRequest()
                 .queryParam("from", from)
                 .queryParam("path", to)
                 .when()
                 .post("/v1/disk/resources/copy");
     }
 
-    // DELETE
+    public Response moveResource(String from, String to) {
+        return authorizedRequest()
+                .queryParam("from", from)
+                .queryParam("path", to)
+                .when()
+                .post("/v1/disk/resources/move");
+    }
 
     public Response deleteFolder(String path) {
-        return baseRequest()
+        return authorizedRequest()
                 .queryParam("path", path)
                 .queryParam("permanently", true)
                 .when()
                 .delete("/v1/disk/resources");
     }
 
+    public Response moveFolderToTrash(String path) {
+        return authorizedRequest()
+                .queryParam("path", path)
+                .queryParam("permanently", false)
+                .when()
+                .delete("/v1/disk/resources");
+    }
+
     public Response clearTrash() {
-        return baseRequest()
+        return authorizedRequest()
                 .when()
                 .delete("/v1/disk/trash/resources");
     }
