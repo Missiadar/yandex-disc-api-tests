@@ -1,6 +1,5 @@
 package ru.yandex.disk.api;
 
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import ru.yandex.disk.config.TestConfig;
@@ -9,11 +8,17 @@ import static io.restassured.RestAssured.given;
 
 public class DiskApiClient {
 
-    private RequestSpecification baseRequest() {
+    // без авторизации
+    private RequestSpecification requestWithoutToken() {
         return given()
                 .baseUri(TestConfig.BASE_URL)
-                .header("Authorization", "OAuth " + TestConfig.TOKEN)
                 .header("Content-Type", "application/json");
+    }
+
+    // с авторизацией
+    private RequestSpecification baseRequest() {
+        return requestWithoutToken()
+                .header("Authorization", "OAuth " + TestConfig.TOKEN);
     }
 
     // GET
@@ -25,13 +30,10 @@ public class DiskApiClient {
     }
 
     public Response getResourcesInfo(String path) {
-        return RestAssured
-                .given()
-                    .baseUri("https://cloud-api.yandex.net")
-                    .header("Content-Type", "application/json")
-                    .queryParam("path", path)
+        return requestWithoutToken()
+                .queryParam("path", path)
                 .when()
-                    .get("/v1/disk/resources");
+                .get("/v1/disk/resources");
     }
 
     public Response getTrashInfo(String path){
