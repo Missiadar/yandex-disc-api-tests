@@ -16,43 +16,38 @@ public class GetTest {
     private static final String TEST_FOLDER = "disk:/GetTestFolder";
 
     @BeforeEach
-    void setUp() {
+    void creating() {
         client.createFolder(TEST_FOLDER);
     }
 
     @AfterEach
-    void tearDown() {
+    void deleting() {
         client.deleteFolder(TEST_FOLDER);
     }
 
     @Test
-    @DisplayName("GET /v1/disk - информация о диске возвращает 200")
+    @DisplayName("GET /v1/disk - информация о диске возвращает 200, а объект возвращает строку")
     void testGetDiskInfo() {
         Response response = client.getDiskInfo();
-
         assertThat("Статус должен быть 200",
                 response.statusCode(), equalTo(200));
         assertThat("Поле facebook должно быть строкой",
-                response.jsonPath().get("system_folders.vkontakte"), instanceOf(String.class));
+                response.jsonPath().get("system_folders.facebook"), instanceOf(String.class));
     }
 
     @Test
-    @DisplayName("GET /v1/disk/resources - существующая папка возвращает 200 и тип dir")
-    void testGetExistingFolder() {
-        Response response = client.getResource(TEST_FOLDER);
-
-        assertThat("Статус должен быть 200",
-                response.statusCode(), equalTo(200));
-        assertThat("Тип ресурса должен быть dir",
-                response.jsonPath().getString("type"), equalTo("dir"));
+    @DisplayName("GET /v1/disk/resources - без токена возвращает 401")
+    void testGetFolderWithoutToken() {
+        Response response = client.getResourcesInfo(TEST_FOLDER);
+        assertThat("Статус должен быть 401",
+                response.statusCode(), equalTo(401));
     }
 
     @Test
-    @DisplayName("GET /v1/disk/resources - несуществующий путь возвращает 404")
-    void testGetNonExistentResource() {
-        Response response = client.getResource("disk:/123");
-
-        assertThat("Статус должен быть 404",
-                response.statusCode(), equalTo(404));
+    @DisplayName("GET /v1/disk/trash/resources - некорректный запрос возвращает 400")
+    void testGetBadRequest() {
+        Response response = client.getTrashInfo("disk:/123");
+        assertThat("Статус должен быть 400",
+                response.statusCode(), equalTo(400));
     }
 }

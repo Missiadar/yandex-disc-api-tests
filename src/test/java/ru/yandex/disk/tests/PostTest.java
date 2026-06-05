@@ -13,35 +13,33 @@ import static org.hamcrest.Matchers.*;
 public class PostTest {
 
     private static final DiskApiClient client = new DiskApiClient();
-    private static final String TEST_FOLDER = "disk:/PostTestSource";
+    private static final String TEST_FOLDER = "disk:/PostTestFolder";
     private static final String COPY_FOLDER   = "disk:/PostTestCopy";
 
     @BeforeEach
-    void setUp() {
+    void creating() {
         client.createFolder(TEST_FOLDER);
     }
 
     @AfterEach
-    void tearDown() {
+    void deleting() {
         client.deleteFolder(TEST_FOLDER);
         client.deleteFolder(COPY_FOLDER);
     }
 
     @Test
-    @DisplayName("POST /v1/disk/resources/copy — копирование папки возвращает 201")
+    @DisplayName("POST /v1/disk/resources/copy - копирование папки возвращает 201")
     void testCopyFolder() {
         Response response = client.copyResource(TEST_FOLDER, COPY_FOLDER);
-
         assertThat("Статус должен быть 201",
                 response.statusCode(), equalTo(201));
     }
 
     @Test
-    @DisplayName("POST /v1/disk/resources/copy — копирование в уже занятый путь возвращает 409")
+    @DisplayName("POST /v1/disk/resources/copy - копирование в уже занятый путь возвращает 409")
     void testCopyToExistingPath() {
         client.copyResource(TEST_FOLDER, COPY_FOLDER);
         Response response = client.copyResource(TEST_FOLDER, COPY_FOLDER);
-
         assertThat("Статус должен быть 409",
                 response.statusCode(), equalTo(409));
     }

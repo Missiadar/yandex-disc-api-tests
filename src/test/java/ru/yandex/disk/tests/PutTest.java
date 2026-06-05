@@ -16,25 +16,23 @@ public class PutTest {
     private static final String TEST_FOLDER = "disk:/PutTestFolder";
 
     @AfterEach
-    void tearDown() {
+    void deleting() {
         client.deleteFolder(TEST_FOLDER);
     }
 
     @Test
-    @DisplayName("PUT /v1/disk/resources — создание новой папки возвращает 201")
+    @DisplayName("PUT /v1/disk/resources - создание новой папки возвращает 201")
     void testCreateFolder() {
         Response response = client.createFolder(TEST_FOLDER);
-
         assertThat("Статус должен быть 201",
                 response.statusCode(), equalTo(201));
     }
 
     @Test
-    @DisplayName("PUT /v1/disk/resources повторное создание той же папки возвращает 409")
+    @DisplayName("PUT /v1/disk/resources - повторное создание той же папки возвращает 409")
     void testCreateFolderAlreadyExists() {
         client.createFolder(TEST_FOLDER);
         Response response = client.createFolder(TEST_FOLDER);
-
         assertThat("Статус должен быть 409",
                 response.statusCode(), equalTo(409));
     }

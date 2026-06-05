@@ -16,30 +16,36 @@ public class DeleteTest {
     private static final String TEST_FOLDER = "disk:/DeleteTestFolder";
 
     @BeforeEach
-    void setUp() {
+    void creating() {
         client.createFolder(TEST_FOLDER);
     }
 
     @AfterEach
-    void tearDown() {
+    void deleting() {
         client.deleteFolder(TEST_FOLDER);
     }
 
     @Test
-    @DisplayName("DELETE /v1/disk/resources — удаление существующей папки возвращает 204")
+    @DisplayName("DELETE /v1/disk/resources - удаление существующей папки возвращает 204")
     void testDeleteExistingFolder() {
         Response response = client.deleteFolder(TEST_FOLDER);
-
         assertThat("Статус должен быть 204",
                 response.statusCode(), equalTo(204));
     }
 
     @Test
-    @DisplayName("DELETE /v1/disk/resources — удаление несуществующего ресурса возвращает 404")
+    @DisplayName("DELETE /v1/disk/resources - удаление несуществующего ресурса возвращает 404")
     void testDeleteNonExistingFolder() {
         Response response = client.deleteFolder("disk:/123");
-
         assertThat("Статус должен быть 404",
                 response.statusCode(), equalTo(404));
+    }
+
+    @Test
+    @DisplayName("DELETE /v1/disk/trash/resources - очистка корзины возвращает 202 или 204")
+    void testClearTrash() {
+        Response response = client.clearTrash();
+        assertThat("Статус должен быть 202 или 204",
+                response.statusCode(), anyOf(equalTo(202), equalTo(204)));
     }
 }

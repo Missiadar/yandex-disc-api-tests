@@ -1,5 +1,6 @@
 package ru.yandex.disk.api;
 
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import ru.yandex.disk.config.TestConfig;
@@ -23,11 +24,14 @@ public class DiskApiClient {
                 .get("/v1/disk");
     }
 
-    public Response getResource(String path) {
-        return baseRequest()
-                .queryParam("path", path)
+    public Response getResourcesInfo(String path) {
+        return RestAssured
+                .given()
+                    .baseUri("https://cloud-api.yandex.net")
+                    .header("Content-Type", "application/json")
+                    .queryParam("path", path)
                 .when()
-                .get("/v1/disk/resources");
+                    .get("/v1/disk/resources");
     }
 
     public Response getTrashInfo(String path){
@@ -64,5 +68,11 @@ public class DiskApiClient {
                 .queryParam("permanently", true)
                 .when()
                 .delete("/v1/disk/resources");
+    }
+
+    public Response clearTrash() {
+        return baseRequest()
+                .when()
+                .delete("/v1/disk/trash/resources");
     }
 }
